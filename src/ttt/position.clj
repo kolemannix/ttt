@@ -22,8 +22,9 @@
 (def victory-sets (clojure.set/union rows cols diags))
 
 (defn get-all [coll indices]
-  (map #(nth coll %) indices)) 
+  (map #(nth coll %) indices))
 
+(get-all [:x :x :o, :o :o :x, :- :- :0] [0 4 8])
 (defn toggle-move [game] 
   (let [next-val (if (= (game :to-move) :x) :o :x)]
     (assoc game :to-move next-val)))
@@ -32,8 +33,26 @@
   (let [new-board (assoc (game :board) move (game :to-move))]
     (toggle-move (assoc game :board new-board))))
 
+(defn gen-moves [game]
+  (filter identity (map-indexed #(if (= %2 :-) %1 nil) (game :board))))
+
 (defn win? 
   ([game]
-   (or (win? game :x) (win? game :o))) 
+   (cond
+     (win? game :x)
+     :x 
+     (win? game :o)
+     :o
+     :else nil))
   ([game player]
    (some true? (map #(every? (partial = player) (get-all (game :board) %)) victory-sets))))
+
+(defn minimax [game]
+  (let [win (win? game)]
+    (cond 
+      (= win :x)
+      100
+      (= win :o)
+      -100
+      (= win nil)
+      0)))

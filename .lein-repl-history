@@ -1,0 +1,22 @@
+exit
+(+ 1 2)
+(new java.util.Date)
+[1 2 3 4 5]
+(first [1 2 3 4 5])
+(rest [1 2 3 4 5])
+(+ 1 2)
+(+ 1 2 4 5)
+(map + [1 2 3 4 5])
+(apply + [1 2 3 4 5])
+(map inc [1 2 3 4 5])
+(inc 4)
+(reduce + [1 2 3 4 5])
+(map inc [1 2 3 4 5])
+(flatten [[1 2][2 3][3 5]]
+)
+(filter even? [1 2 2 3 4 5 6])
+(def x 5)
+x
+(defn doubleIt [x] (* x 2))
+(doubleIt 4)
+(map doubleIt [2 3 4])
