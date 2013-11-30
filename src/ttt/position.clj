@@ -1,6 +1,6 @@
 (ns ttt.position)
 
-;; Board is represented as a 2d matrix of keywords
+;; Board is represented as a flat vector of keywords
 ;; and indexed thusly:
 ;; | 0 | 1 | 2
 ;; -------------
