@@ -1,12 +1,9 @@
 (ns ttt.position-test
   (:require [expectations :refer :all] 
-            [ttt.position :refer :all]))
+            [ttt.solve :refer :all]))
 
-(def new-game  {:board  (vec  (repeat 9 :-))
+(def new-game  {:board  (vec (repeat 9 :-))
                 :to-move :x}) 
-
-(expect :o ((toggle-move new-game) :to-move))
-(expect :x ((toggle-move (toggle-move new-game)) :to-move))
 
 (def test-1  {:board  [:x :x :x
                        :o :o :x
@@ -21,9 +18,6 @@
                        :x :x :-]
               :to-move :x})
 
-(expect :x (win? test-1))
-(expect nil (win? new-game))
-
 (expect 100 (minimax test-1))
 (expect -100 (minimax test-3))
 
@@ -34,8 +28,16 @@
                        :- :x :-
                        :x :- :-]
               :to-move :o})
+(def test-5  {:board  [:x :- :x
+                       :o :x :-
+                       :o :- :-]
+              :to-move :o})
+(def test-6  {:board  [:o :o :x
+                       :- :x :-
+                       :- :- :-]
+              :to-move :o})
+
 (expect 100 (minimax test-4))
+(expect 0 (minimax new-game)) 
 
-(children new-game)
-;(expect 0 (minimax new-game)) ; this takes 16 seconds
-
+(expect 8 (best-move test-5))

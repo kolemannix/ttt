@@ -6,5 +6,5 @@
   :plugins [[lein-autoexpect "1.0"]]
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [expectations "1.4.56"]]
-  :main ttt.core
+  :main ttt.console
   :profiles {:uberjar {:aot :all}})
