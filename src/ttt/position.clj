@@ -36,23 +36,43 @@
 (defn gen-moves [game]
   (filter identity (map-indexed #(if (= %2 :-) %1 nil) (game :board))))
 
+(defn children [game]
+  (map (fn [move] (make-move move game)) (gen-moves game)))
+
+(defn tie? [game]
+  )
+
+;; win? will return
+;; :x if x team won the game
+;; :o if o team won the game
+;; :- if the game ended as a tie
+;; nil if the game is not over
 (defn win? 
   ([game]
    (cond
-     (win? game :x)
-     :x 
-     (win? game :o)
-     :o
-     :else nil))
+     (win? game :x) :x 
+     (win? game :o) :o
+     (empty? (filter (partial = :-) (game :board))) :-  ;; no moves left
+     :else nil)) ;; game isn't over
   ([game player]
    (some true? (map #(every? (partial = player) (get-all (game :board) %)) victory-sets))))
-
+(declare max- min-)
 (defn minimax [game]
+  (println (game :board))
   (let [win (win? game)]
     (cond 
-      (= win :x)
-      100
-      (= win :o)
-      -100
+      (= win :x) 100
+      (= win :o) -100
+      (= win :-) 0
       (= win nil)
-      0)))
+      (if (= (game :to-move) :x)
+        (max- game)
+        (min- game)))))
+
+(defn max- [game]
+  (println "max called")
+  (let [results (map minimax (children game))]
+    (apply max results)))
+(defn min- [game]
+  (let [results (map minimax (children game))]
+    (apply min results)))

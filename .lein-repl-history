@@ -20,3 +20,4 @@ x
 (defn doubleIt [x] (* x 2))
 (doubleIt 4)
 (map doubleIt [2 3 4])
+exit
