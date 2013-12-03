@@ -41,3 +41,5 @@
 (expect 0 (minimax new-game)) 
 
 (expect 8 (best-move test-5))
+
+(expect 6 (best-move test-6))

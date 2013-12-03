@@ -11,7 +11,7 @@
   (map #(nth coll %) indices))
 
 (defn toggle-move [game] 
-  (let [next-val (if (= (game :to-move) :x) :o :x)]
+  (let [next-val (if (x? (game :to-move)) :o :x)]
     (assoc game :to-move next-val)))
 
 (defn make-move [move game]
@@ -19,7 +19,7 @@
     (toggle-move (assoc game :board new-board))))
 
 (defn- gen-moves [game]
-  (filter identity (map-indexed #(if (= %2 :-) %1 nil) (game :board))))
+  (filter identity (map-indexed #(if (blank? %2) %1 nil) (game :board))))
 
 (defn- children [game]
   (map (fn [move] (make-move move game)) (gen-moves game)))
@@ -34,7 +34,7 @@
    (cond
      (win? game :x) :x 
      (win? game :o) :o
-     (empty? (filter (partial = :-) (game :board))) :-  ;; no moves left
+     (empty? (filter blank? (game :board))) :-  ;; no moves left
      :else nil)) ;; game isn't over
   ([game player]
    (some true? (map #(every? (partial = player) (get-all (game :board) %)) victory-sets))))
@@ -46,7 +46,7 @@
       (= win :o) -100
       (= win :-) 0
       (= win nil)
-      (if (= (game :to-move) :x)
+      (if (x? (game :to-move))
         (max- game)
         (min- game)))))
 
