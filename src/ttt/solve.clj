@@ -40,7 +40,6 @@
    (some true? (map #(every? (partial = player) (get-all (game :board) %)) victory-sets))))
 (declare max- min-)
 (defn minimax-inner [game]
-  (println (game :board))
   (let [win (win? game)]
     (cond 
       (= win :x) 100
@@ -54,26 +53,27 @@
 (def minimax (memoize minimax-inner))
 
 (defn- index-of-max [coll]
+  (first (apply max-key second (map-indexed vector coll)))
+  )
+(defn- index-of-min [coll]
   (first (apply min-key second (map-indexed vector coll)))
   )
 
-(defn minimax-root [game]
+(defn- minimax-root [game]
   (let [moves (gen-moves game)
         results (map minimax (children game))
         to-move (game :to-move)
         ]
-   (if (x? to-move)
-     (nth moves )
-     )
+    (if (x? to-move)
+      (nth moves (index-of-max results))
+      (nth moves (index-of-min results))
+      )
     )
-
   )
 
 (defn best-move [game] (minimax-root game))
 
-
 (defn max- [game]
-  (println "max called")
   (let [results (map minimax (children game))]
     (apply max results)))
 (defn min- [game]

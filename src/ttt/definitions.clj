@@ -1,4 +1,6 @@
-(ns ttt.definitions)
+(ns ttt.definitions
+  (:require clojure.set)
+  )
 
 ;; Board is represented as a flat vector of keywords
 ;; and indexed thusly:
