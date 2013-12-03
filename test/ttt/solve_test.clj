@@ -1,4 +1,4 @@
-(ns ttt.position-test
+(ns ttt.solve-test
   (:require [expectations :refer :all] 
             [ttt.solve :refer :all]))
 
