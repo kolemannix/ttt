@@ -7,6 +7,10 @@
 ;; | 3 | 4 | 5
 ;; | 6 | 7 | 8
 
+
+(def new-game {:board (vec (repeat 9 :-))
+               :to-move :x
+               })
 (defn- get-all [coll indices]
   (map #(nth coll %) indices))
 
@@ -79,3 +83,22 @@
 (defn min- [game]
   (let [results (map minimax (children game))]
     (apply min results)))
+
+(def slot-map {:x " x " :o " o " :- "   "})
+(def separator "\n---------------\n")
+(defn- print-row [row]
+  (do 
+    (dorun (map (fn [x] (print (str "|" (slot-map x) "|"))) row)) )
+  )
+(print-row [:x :o :x])
+(defn print-game [game]
+  (let [rows (partition 3 (game :board))]
+    (do
+      (print-row (first rows))
+      (print separator)
+      (print-row (second rows))
+      (print separator)
+      (print-row (nth rows 2))
+      )   
+    )
+  )

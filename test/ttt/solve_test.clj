@@ -43,3 +43,4 @@
 (expect 8 (best-move test-5))
 
 (expect 6 (best-move test-6))
+(print-game test-5)
