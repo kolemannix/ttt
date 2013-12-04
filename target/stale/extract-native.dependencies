@@ -1,1 +1,1 @@
-([:dependencies ([org.clojure/tools.namespace "0.2.4"] [lein-autoexpect "1.0"] [org.clojure/clojure "1.5.1"] [expectations/expectations "1.4.56"] [org.clojure/tools.nrepl "0.2.3" :exclusions ([org.clojure/clojure])] [clojure-complete/clojure-complete "0.2.3" :exclusions ([org.clojure/clojure])])])
+([:dependencies ([org.clojure/clojure "1.5.1"] [expectations/expectations "1.4.56"] [org.clojure/tools.nrepl "0.2.3" :exclusions ([org.clojure/clojure])] [clojure-complete/clojure-complete "0.2.3" :exclusions ([org.clojure/clojure])])])

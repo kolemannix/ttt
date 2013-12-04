@@ -2,8 +2,6 @@
   (:require [expectations :refer :all] 
             [ttt.solve :refer :all]))
 
-(def new-game  {:board  (vec (repeat 9 :-))
-                :to-move :x}) 
 
 (def test-1  {:board  [:x :x :x
                        :o :o :x
@@ -43,4 +41,3 @@
 (expect 8 (best-move test-5))
 
 (expect 6 (best-move test-6))
-(print-game test-5)
