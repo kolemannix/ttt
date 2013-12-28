@@ -54,9 +54,14 @@
         (recur 
           (let [move 
                 (if (= player (game :to-move)) 
-                  (- (Integer/parseInt (read-line)) 1)
+                  (let [input-move (- (Integer/parseInt (read-line)) 1)
+                        valids (valid-moves game)]
+                    (println input-move)
+                    (println valids)
+                    (if (contains? valids input-move)
+                      input-move
+                      -1))
                   (best-move game))
-                updated (make-move move game)
-                ]
-            (assoc updated :result (win? updated))))))
+                next-game (if (= move -1) game (make-move move game))]
+            next-game))))
     ))

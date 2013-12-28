@@ -3,9 +3,13 @@
 
 ;; Board is represented as a flat vector of keywords
 ;; and indexed thusly:
-;; | 0 | 1 | 2
-;; | 3 | 4 | 5
-;; | 6 | 7 | 8
+;; +---+---+---+
+;; | 0 | 1 | 2 |
+;; +---+---+---+
+;; | 3 | 4 | 5 |
+;; +---+---+---+
+;; | 6 | 7 | 8 |
+;; +---+---+---+
 
 
 (def new-game {:board (vec (repeat 9 :-))
@@ -14,27 +18,6 @@
                })
 (defn- get-all [coll indices]
   (map #(nth coll %) indices))
-
-(defn toggle-move [game] 
-  (let [next-val (if (x? (game :to-move)) :o :x)]
-    (assoc game :to-move next-val)))
-
-(defn inc-moves-made [{moves-made :moves-made :as game}]
-  (assoc game :moves-made (inc moves-made))
-  )
-
-(defn make-move [move {:keys [board to-move] :as game}]
-  (let [new-board (assoc board move to-move)]
-    (-> game 
-        (assoc :board new-board)
-        (toggle-move)
-        (inc-moves-made))))
-
-(defn- gen-moves [game]
-  (filter identity (map-indexed #(if (blank? %2) %1 nil) (game :board))))
-
-(defn- children [game]
-  (map (fn [move] (make-move move game)) (gen-moves game)))
 
 ;; win? will return
 ;; :x x wins
@@ -50,8 +33,45 @@
      :else nil)) ;; game isn't over
   ([game player]
    (some true? (map #(every? (partial = player) (get-all (game :board) %)) victory-sets))))
+
+(defn toggle-move [game] 
+  (let [next-val (if (x? (game :to-move)) :o :x)]
+    (assoc game :to-move next-val)))
+
+(defn inc-moves-made [{moves-made :moves-made :as game}]
+  (assoc game :moves-made (inc moves-made))
+  )
+
+(defn update-result [game]
+  (if-let [result (win? game)]
+    (assoc game :result result)
+    game
+    )
+  )
+
+(defn make-move [move {:keys [board to-move] :as game}]
+  (let [new-board (assoc board move to-move)]
+    (-> game 
+        (assoc :board new-board)
+        (toggle-move)
+        (update-result)
+        (inc-moves-made))))
+
+
+(defn- gen-moves [game]
+  (filter identity (map-indexed #(if (blank? %2) %1 nil) (game :board))))
+
+(def valid-moves (comp set gen-moves))
+
+(contains? (valid-moves new-game) 1)
+
+(defn- children [game]
+  (map (fn [move] (make-move move game)) (gen-moves game)))
+
+
 (declare max- min-)
-(defn minimax-inner [{depth :moves-made :as game}]
+
+(defn- minimax-inner [{depth :moves-made :as game}]
   (let [win (win? game)]
     (cond 
       ;(= win :x) 100
