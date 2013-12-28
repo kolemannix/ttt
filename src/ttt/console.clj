@@ -60,7 +60,7 @@
                     (println valids)
                     (if (contains? valids input-move)
                       input-move
-                      -1))
+                      (do (println "Illegal Move. Try another one.") -1)))
                   (best-move game))
                 next-game (if (= move -1) game (make-move move game))]
             next-game))))
