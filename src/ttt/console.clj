@@ -4,7 +4,9 @@
   )
 
 (def slot-map {:x "x" :o "o" :- " "})
+
 (def separator "\n+---+---+---+\n")
+
 (defn- print-row [row]
   (let [pieces (vec (map slot-map row))]
     (str "| " (pieces 0) " | " (pieces 1)  " | " (pieces 2) " |")))
@@ -18,16 +20,14 @@
       (print-row (second rows))
       separator
       (print-row (nth rows 2))
-      separator
-      ))) 
+      separator))) 
 
 (defn- exit-with-result [result]
   (do (case result
         :x (println "X wins!")
         :o (println "O wins!")
         :- (println "Tie!"))
-      (System/exit 0))
-  )
+      (System/exit 0)))
 
 (defn -main []
   (println "Player is (x) or (o)? ")
@@ -38,10 +38,7 @@
         "o" :o
         (do 
           (println "type x or o, scrub")
-          (System/exit 0)
-          )
-        )
-      ))
+          (System/exit 0)))))
   (loop [game new-game]  
     (println (to-string game))
     (if-let [result (game :result)] 
@@ -50,18 +47,14 @@
         (println (if (= player (game :to-move)) 
                    "Your Turn. Make a move: (1-9) "
                    "My turn. I'm thinking"))
-
         (recur 
           (let [move 
                 (if (= player (game :to-move)) 
                   (let [input-move (- (Integer/parseInt (read-line)) 1)
                         valids (valid-moves game)]
-                    (println input-move)
-                    (println valids)
                     (if (contains? valids input-move)
                       input-move
                       (do (println "Illegal Move. Try another one.") -1)))
                   (best-move game))
                 next-game (if (= move -1) game (make-move move game))]
-            next-game))))
-    ))
+            next-game))))))

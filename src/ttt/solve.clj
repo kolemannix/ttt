@@ -39,15 +39,12 @@
     (assoc game :to-move next-val)))
 
 (defn inc-moves-made [{moves-made :moves-made :as game}]
-  (assoc game :moves-made (inc moves-made))
-  )
+  (assoc game :moves-made (inc moves-made)))
 
 (defn update-result [game]
   (if-let [result (win? game)]
     (assoc game :result result)
-    game
-    )
-  )
+    game))
 
 (defn make-move [move {:keys [board to-move] :as game}]
   (let [new-board (assoc board move to-move)]
@@ -87,11 +84,10 @@
 (def minimax (memoize minimax-inner))
 
 (defn- index-of-max [coll]
-  (first (apply max-key second (map-indexed vector coll)))
-  )
+  (first (apply max-key second (map-indexed vector coll))))
+
 (defn- index-of-min [coll]
-  (first (apply min-key second (map-indexed vector coll)))
-  )
+  (first (apply min-key second (map-indexed vector coll))))
 
 (defn- minimax-root [game]
   (let [moves (gen-moves game)
@@ -100,10 +96,7 @@
         ]
     (if (x? to-move)
       (nth moves (index-of-max results))
-      (nth moves (index-of-min results))
-      )
-    )
-  )
+      (nth moves (index-of-min results)))))
 
 (defn best-move [game] (minimax-root game))
 
