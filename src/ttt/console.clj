@@ -22,24 +22,41 @@
       ))) 
 
 (defn- exit-with-result [result]
-  (case result
-    :x (println "X wins!")
-    :o (println "O wins!")
-    :- (println "Tie!"))
-  (System/exit 0)
+  (do (case result
+        :x (println "X wins!")
+        :o (println "O wins!")
+        :- (println "Tie!"))
+      (System/exit 0))
   )
 
 (defn -main []
+  (println "Player is (x) or (o)? ")
+  (def player 
+    (let [input (read-line)]
+      (case input 
+        "x" :x
+        "o" :o
+        (do 
+          (println "type x or o, scrub")
+          (System/exit 0)
+          )
+        )
+      ))
   (loop [game new-game]  
-    (do 
-      (println (to-string game))
-      (println "Make a move: (1-9) "))
+    (println (to-string game))
     (if-let [result (game :result)] 
       (exit-with-result result)
-      (recur 
-            (let [input (read-line)
-                  move (- (Integer/parseInt input) 1)
-                  updated (make-move move game)
-                  ]
-              (assoc updated :result (win? updated))))))
-  ) 
+      (do 
+        (println (if (= player (game :to-move)) 
+                   "Your Turn. Make a move: (1-9) "
+                   "My turn. I'm thinking"))
+
+        (recur 
+          (let [move 
+                (if (= player (game :to-move)) 
+                  (- (Integer/parseInt (read-line)) 1)
+                  (best-move game))
+                updated (make-move move game)
+                ]
+            (assoc updated :result (win? updated))))))
+    ))
