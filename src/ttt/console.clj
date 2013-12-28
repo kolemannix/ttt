@@ -3,43 +3,43 @@
   (:gen-class)
   )
 
-(def slot-map {:x " x " :o " o " :- "   "})
-(def separator "\n---------------\n")
+(def slot-map {:x "x" :o "o" :- " "})
+(def separator "\n+---+---+---+\n")
 (defn- print-row [row]
-  (do 
-    (dorun (map (fn [x] (print (str "|" (slot-map x) "|"))) row)) )
+  (let [pieces (vec (map slot-map row))]
+    (str "| " (pieces 0) " | " (pieces 1)  " | " (pieces 2) " |")))
+
+(defn to-string [game]
+  (let [rows (partition 3 (game :board))]
+    (str 
+      separator
+      (print-row (first rows))
+      separator
+      (print-row (second rows))
+      separator
+      (print-row (nth rows 2))
+      separator
+      ))) 
+
+(defn- exit-with-result [result]
+  (case result
+    :x (println "X wins!")
+    :o (println "O wins!")
+    :- (println "Tie!"))
+  (System/exit 0)
   )
 
-(defn print-game [game]
-  (let [rows (partition 3 (game :board))]
-    (do
-      (print-row (first rows))
-      (print separator)
-      (print-row (second rows))
-      (print separator)
-      (print-row (nth rows 2))
-      (println)
-      )   
-    )
-  ) 
-
-(def username (atom "player"))
-
 (defn -main []
-  (loop [game new-game]
-    (print-game game)
-    (print "Make a move: (1-9) ")
-    (let [input (read-line)
-          move (- (Integer/parseInt input) 1)
-          updated (make-move move game)
-          ]
-      (case (win? updated)
-        :x (println "X wins!")
-        :o (println "O wins!")
-        :- (println "It's a draw!")
-        nil nil
-        )
-      (recur updated)
-      )
-    )
+  (loop [game new-game]  
+    (do 
+      (println (to-string game))
+      (println "Make a move: (1-9) "))
+    (if-let [result (game :result)] 
+      (exit-with-result result)
+      (recur 
+            (let [input (read-line)
+                  move (- (Integer/parseInt input) 1)
+                  updated (make-move move game)
+                  ]
+              (assoc updated :result (win? updated))))))
   ) 
