@@ -11,31 +11,46 @@
 ;; | 6 | 7 | 8 |
 ;; +---+---+---+
 
+(def slot-map {:x "x" :o "o" :- " "})
 
-(def new-game {:board (vec (repeat 9 :-))
-               :to-move :x
-               :moves-made 0
-               })
+(defrecord Game [board to-move moves-made]
+  Object 
+  (toString [this]
+    (let [rows (partition 3 board)
+          separator "\n+---+---+---+\n"
+          print-row (fn [row] (let [pieces (vec (map slot-map row))]
+                                (str "| " (pieces 0) 
+                                     " | " (pieces 1)  
+                                     " | " (pieces 2) " |")))
+          ]
+      (str 
+        separator
+        (print-row (first rows))
+        separator
+        (print-row (second rows))
+        separator
+        (print-row (nth rows 2))
+        separator)))  
+  )
+
+(def new-game (->Game (vec (repeat 9 :-)) :x 0))
+
 (defn- get-all [coll indices]
   (map #(nth coll %) indices))
 
-;; win? will return
-;; :x x wins
-;; :o o wins
-;; :- tie
-;; nil not over
 (defn win? 
-  ([game]
+  ":x if x wins, :o if o wins, :- for a tie, and nil for game in progress"
+  ([{board :board :as game}]
    (cond
      (win? game :x) :x 
      (win? game :o) :o
-     (empty? (filter blank? (game :board))) :-  ;; no moves left
+     (empty? (filter blank? board)) :-  ;; no moves left
      :else nil)) ;; game isn't over
-  ([game player]
-   (some true? (map #(every? (partial = player) (get-all (game :board) %)) victory-sets))))
+  ([{board :board :as game} player]
+   (some true? (map #(every? (partial = player) (get-all board %)) victory-sets))))
 
-(defn toggle-move [game] 
-  (let [next-val (if (x? (game :to-move)) :o :x)]
+(defn toggle-move [{to-move :to-move :as game}] 
+  (let [next-val (if (x? to-move) :o :x)]
     (assoc game :to-move next-val)))
 
 (defn inc-moves-made [{moves-made :moves-made :as game}]
@@ -54,9 +69,8 @@
         (update-result)
         (inc-moves-made))))
 
-
-(defn- gen-moves [game]
-  (filter identity (map-indexed #(if (blank? %2) %1 nil) (game :board))))
+(defn- gen-moves [{board :board}]
+  (filter identity (map-indexed #(if (blank? %2) %1 nil) board)))
 
 (def valid-moves (comp set gen-moves))
 
@@ -65,19 +79,15 @@
 (defn- children [game]
   (map (fn [move] (make-move move game)) (gen-moves game)))
 
-
 (declare max- min-)
 
-(defn- minimax-inner [{depth :moves-made :as game}]
+(defn- minimax-inner [{to-move :to-move depth :moves-made :as game}]
   (let [win (win? game)]
-    (cond 
-      ;(= win :x) 100
-      ;(= win :o) -100
-      (= win :x) (- 100 depth)
-      (= win :o) (+ -100 depth)
-      (= win :-) 0
-      (= win nil)
-      (if (x? (game :to-move))
+    (case win 
+      :x (- 100 depth)
+      :o (+ -100 depth)
+      :- 0
+      (if (x? to-move)
         (max- game)
         (min- game)))))
 
@@ -89,10 +99,9 @@
 (defn- index-of-min [coll]
   (first (apply min-key second (map-indexed vector coll))))
 
-(defn- minimax-root [game]
+(defn- minimax-root [{to-move :to-move :as game}]
   (let [moves (gen-moves game)
         results (map minimax (children game))
-        to-move (game :to-move)
         ]
     (if (x? to-move)
       (nth moves (index-of-max results))
@@ -100,9 +109,9 @@
 
 (defn best-move [game] (minimax-root game))
 
-(defn max- [game]
+(defn- max- [game]
   (let [results (map minimax (children game))]
     (apply max results)))
-(defn min- [game]
+(defn- min- [game]
   (let [results (map minimax (children game))]
     (apply min results)))
